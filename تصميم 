@@ -1,0 +1,118 @@
+
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ShoppingCart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+export default function AlManalStore() {
+  const [lang, setLang] = useState('ar');
+  const [products, setProducts] = useState([
+    { name: 'ثياب', price: 100, image: '', description: 'ثياب جميلة وعصرية.' },
+    { name: 'عطور', price: 150, image: '', description: 'عطور فاخرة تدوم طويلاً.' },
+    { name: 'إكسسوارات', price: 50, image: '', description: 'إكسسوارات تضيف لمسة رائعة.' },
+    { name: 'شيلة', price: 70, image: '', description: 'شيلات تقليدية بألوان جذابة.' },
+  ]);
+  const [cart, setCart] = useState([]);
+  const [editingProductIndex, setEditingProductIndex] = useState(null);
+  const [newProductName, setNewProductName] = useState('');
+  const [newProductPrice, setNewProductPrice] = useState('');
+  const [newProductImage, setNewProductImage] = useState('');
+  const [newProductDescription, setNewProductDescription] = useState('');
+
+  const handleEditClick = (index) => {
+    setEditingProductIndex(index);
+    setNewProductName(products[index].name);
+    setNewProductPrice(products[index].price);
+    setNewProductImage(products[index].image);
+    setNewProductDescription(products[index].description);
+  };
+
+  const handleUpdateProduct = () => {
+    const updatedProducts = [...products];
+    updatedProducts[editingProductIndex] = { 
+      name: newProductName, 
+      price: newProductPrice, 
+      image: newProductImage,
+      description: newProductDescription,
+    };
+    setProducts(updatedProducts);
+    resetEditProductFields();
+  };
+
+  const resetEditProductFields = () => {
+    setEditingProductIndex(null);
+    setNewProductName('');
+    setNewProductPrice('');
+    setNewProductImage('');
+    setNewProductDescription('');
+  };
+
+  const handleAddToCart = (product) => {
+    setCart([...cart, product]);
+  };
+
+  const handleRemoveFromCart = (productName) => {
+    const updatedCart = cart.filter(item => item.name !== productName);
+    setCart(updatedCart);
+  };
+
+  const handleCheckout = (paymentMethod) => {
+    alert(`تم الدفع باستخدام ${paymentMethod}`);
+    setCart([]); // تفريغ السلة بعد الدفع
+  };
+
+  const content = {
+    ar: {
+      title: 'المنال للملابس النسائية',
+      slogan: 'أناقة سودانية تليق بكِ',
+      checkout: 'الدفع',
+      footer: '© 2025 المنال للملابس النسائية. جميع الحقوق محفوظة.',
+      langSwitch: 'عربي / EN',
+      contact: 'للتواصل: 0564971655',
+    },
+    en: {
+      title: 'Al Manal Women’s Fashion',
+      slogan: 'Sudanese elegance that suits you',
+      checkout: 'Checkout',
+      footer: '© 2025 Al Manal Women’s Fashion. All rights reserved.',
+      langSwitch: 'EN / عربي',
+      contact: 'Contact: 0564971655',
+    },
+  };
+
+  const t = content[lang];
+
+  return (
+    <div className={`font-sans bg-white text-black min-h-screen ${lang === 'ar' ? 'text-right' : 'text-left'}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <header className="flex justify-between items-center p-4 shadow-md bg-white">
+        <h1 className="text-2xl font-bold text-pink-500">{t.title}</h1>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}>{t.langSwitch}</Button>
+          <Button variant="outline" className="flex items-center gap-2">
+            <ShoppingCart size={18} /> {cart.length} سلة التسوق
+          </Button>
+        </div>
+      </header>
+
+      <motion.section className="bg-gradient-to-r from-pink-100 to-white py-20 text-center">
+        <h2 className="text-4xl font-bold mb-4 text-black">{t.slogan}</h2>
+      </motion.section>
+
+      <section className="py-16 px-6 grid md:grid-cols-4 sm:grid-cols-2 gap-6">
+        {products.map((product, i) => (
+          <motion.div key={i} className="border rounded-2xl shadow-md overflow-hidden">
+            <img src={product.image || 'https://via.placeholder.com/400'} alt={product.name} className="w-full h-64 object-cover" />
+            <div className="p-4 text-center">
+              <h3 className="text-xl font-semibold text-pink-600">{product.name}</h3>
+              <p className="text-gray-600">{product.price} ر.س</p>
+              <p className="text-gray-500">{product.description}</p>
+              <Button onClick={() => handleAddToCart(product)}>أضف إلى السلة</Button>
+              <Button onClick={() => handleEditClick(i)}>تعديل</Button>
+            </div>
+          </motion.div>
+        ))}
+      </section>
+
+      {/* نموذج تعديل المنتج */}
+      {editingProductIndex !== null
+ 
